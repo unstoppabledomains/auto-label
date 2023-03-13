@@ -1,0 +1,17 @@
+#!/bin/bash -eu
+
+yarn clean
+yarn
+yarn build
+git switch dist
+cat .gitignore | grep --line-buffered -v node_modules > .gitignore.new # redirect the grep command output to same file is not possible
+mv .gitignore.new .gitignore
+rm -rf node_modules
+yarn install --production
+git add .gitignore
+git add node_modules
+git commit -m "Release $1"
+git tag $1
+git push -f
+git push origin $1:$1
+git switch -
